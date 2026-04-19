@@ -21,13 +21,23 @@ void MainMenu::init_menu(SDL_Renderer* renderer){
 
 
    
-
+    // regular static
     for(int i=0; i<9;i++){
         SDL_Surface* temp_texture = IMG_Load(path[i]);
         static_textures[i]=SDL_CreateTextureFromSurface(renderer,temp_texture);
        SDL_SetTextureAlphaMod(static_textures[i], 50);
 
         SDL_DestroySurface(temp_texture);
+    }
+
+    // divided static
+    for(int i=0; i<15; i++){
+        SDL_Surface* temp_surface = IMG_Load(divided_path[i]);
+        divided_static_texture[i]=SDL_CreateTextureFromSurface(renderer,temp_surface);
+        SDL_SetTextureAlphaMod(divided_static_texture[i], 50);
+
+
+        SDL_DestroySurface(temp_surface);
     }
 
 
@@ -106,6 +116,17 @@ void MainMenu::main_menu_state(int state,int frame){
 void MainMenu::staticTexture(int state){
 
     SDL_RenderTexture(this->renderer, static_textures[state], NULL, &dest);
+    
+
+    return;
+}
+
+void MainMenu::divided_staticTexture(int frame){
+
+    int index = (frame / 50) % 15;
+   
+    SDL_RenderTexture(this->renderer, divided_static_texture[index], NULL, &dest2);
+    
 
     return;
 }

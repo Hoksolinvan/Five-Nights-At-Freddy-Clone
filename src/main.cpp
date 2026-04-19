@@ -4,8 +4,8 @@
 #include <SDL3/SDL.h>
 
 
-const int window_x = 1000;
-const int window_y = 1000;
+const int window_x = 1280;
+const int window_y = 720;
 bool running = true;
 bool main_menu = true;
 bool default_main_menu = true;
@@ -17,6 +17,7 @@ int main(int argc, char* argv[]){
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> dist(0, 3);
     std::uniform_int_distribution<int> dist2(0, 9);
+    std::uniform_int_distribution<int> dist3(0,14);
     std::uniform_int_distribution<int> random_number(0,100);
     SDL_Event event;
     
@@ -37,7 +38,7 @@ int main(int argc, char* argv[]){
     SDL_AudioSpec spec2;
     Uint8* wav_data2;
     Uint32 wav_length2;
-    SDL_LoadWAV("assets/sound/static2.wav",&spec2,&wav_data2,&wav_length2);
+    SDL_LoadWAV("assets/sounds/static2.wav",&spec2,&wav_data2,&wav_length2);
 
     // Create a stream and bind it to the default device
     SDL_AudioStream* stream = SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, NULL, NULL);
@@ -62,10 +63,8 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
-    int w, h;
-    SDL_GetWindowSize(window, &w, &h);
-    
+    SDL_SetWindowSize(window, 1280, 720);
+   
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window,nullptr);
 
@@ -77,7 +76,7 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    MainMenu* main_menu_object = new MainMenu(w,h,renderer);
+    MainMenu* main_menu_object = new MainMenu(window_x,window_y,renderer);
     Uint64 last_time = SDL_GetTicks();
 
     uint32_t frame =0;
@@ -85,6 +84,7 @@ int main(int argc, char* argv[]){
     while(running){
         frame++;
 
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         Uint64 now = SDL_GetTicks();
         float dt = (now - last_time) / 1000.0f;
@@ -130,7 +130,13 @@ int main(int argc, char* argv[]){
 
             }
 
-            main_menu_object->staticTexture(dist2(rd));
+            main_menu_object->staticTexture(dist2(gen) % 9);
+
+            if (!(frame%100)){
+            main_menu_object->divided_staticTexture(frame);
+            }
+
+         
         }
 
 
