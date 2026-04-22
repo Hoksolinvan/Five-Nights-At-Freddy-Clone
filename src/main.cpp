@@ -251,6 +251,11 @@ int main(int argc, char* argv[]){
                           }
 
                           leftdoorup = !leftdoorup;
+                          if(leftdoorup){                          // only when opening the door
+                            leftdoorclosed = false;
+                            // reset timer HERE
+                        }
+                         leftDoorAnimStart = SDL_GetTicks(); 
                 }
 
                 if(mouseX_button>=1180 && mouseX_button<=1250 && mouseY_button>=290 && mouseY_button<=340){
@@ -266,6 +271,11 @@ int main(int argc, char* argv[]){
                           }
 
                           rightdoorup = !rightdoorup;
+                          if(rightdoorup){
+                            rightdoorclosed = false;
+                            
+                        }
+                        rightDoorAnimStart = SDL_GetTicks();
                 }
 
                 if(mouseX_button>=1180 && mouseX_button<=1250 && mouseY_button>=360 && mouseY_button<=400){

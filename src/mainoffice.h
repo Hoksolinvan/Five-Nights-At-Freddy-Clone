@@ -6,6 +6,10 @@
 #include <random>
 #include <algorithm>
 #include <iostream>
+extern bool leftdoorclosed;
+extern bool rightdoorclosed;
+extern Uint32 leftDoorAnimStart;
+extern Uint32 rightDoorAnimStart;
 
 class MainOffice{
 

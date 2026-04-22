@@ -1,11 +1,16 @@
 #include "mainoffice.h"
 
+int animstart = 0;
 
-Uint32 animstart = SDL_GetTicks();
 const int delay = 150;
+const int doordelay = 50;
+
+
+
 bool leftdoorclosed = false;
 bool rightdoorclosed = false;
-
+Uint32 leftDoorAnimStart = 0;
+Uint32 rightDoorAnimStart = 0;
 
 
 void MainOffice::initOffice(){
@@ -160,10 +165,6 @@ void MainOffice::RenderOffice(bool screen_camera, bool leftdoorbottom, bool left
     if(!leftdoorbottom && !rightdoorbottom){
    SDL_RenderTexture(renderer,officeTextures[1],NULL,&dst);
 
-           SDL_RenderTexture(renderer,leftDoorFrame[9],NULL,&leftdoor);
-
-
-
     }
     else if(leftdoorbottom && !rightdoorbottom){
     
@@ -203,27 +204,36 @@ void MainOffice::RenderOffice(bool screen_camera, bool leftdoorbottom, bool left
     }
     
 
-    if(!leftdoorclosed && leftdoorup){
-        Uint32 elapsed_time = SDL_GetTicks() - animstart;
-        animFrame = (elapsed_time/delay);
 
-        if(animFrame>12){
-            animFrame=12;
+     if(!leftdoorclosed && leftdoorup){
+        Uint32 elapsed_time = SDL_GetTicks() - leftDoorAnimStart;
+        animFrame = (elapsed_time/doordelay);
+
+        if(animFrame>=11){
+            animFrame=10;
             leftdoorclosed= true;
         }
 
         SDL_RenderTexture(renderer,leftDoorFrame[animFrame],NULL,&leftdoor);
     }
-    else if(leftdoorup){
-        SDL_RenderTexture(renderer,leftDoorFrame[12],NULL,&leftdoor);
-    }
-    // else{
+    else if(leftdoorclosed && !leftdoorup){
+    // opening: play 12 -> 0
+    Uint32 elapsed_time = SDL_GetTicks() - leftDoorAnimStart;
+    int frame = 11 - (int)(elapsed_time / doordelay);
 
-    // }
+    if(frame <= 0){
+        frame = 0;
+        leftdoorclosed = false;
+    }
+    SDL_RenderTexture(renderer, leftDoorFrame[frame], NULL, &leftdoor);
+}
+    else if(leftdoorup){
+        SDL_RenderTexture(renderer,leftDoorFrame[11],NULL,&leftdoor);
+    }
 
     if(!rightdoorclosed && rightdoorup){
-         Uint32 elapsed_time = SDL_GetTicks() - animstart;
-        animFrame = (elapsed_time/delay);
+         Uint32 elapsed_time = SDL_GetTicks() - rightDoorAnimStart;
+        animFrame = (elapsed_time/doordelay);
 
         if(animFrame>12){
             animFrame=12;
@@ -233,9 +243,21 @@ void MainOffice::RenderOffice(bool screen_camera, bool leftdoorbottom, bool left
         SDL_RenderTexture(renderer,rightDoorFrame[animFrame],NULL,&rightdoor);
 
     }
+    else if(rightdoorclosed && !rightdoorup){
+        Uint32 elapsed_time = SDL_GetTicks() - rightDoorAnimStart;
+        int frame = 11 - (int)(elapsed_time/doordelay);
+
+        if(frame <=0){
+            frame = 0;
+            rightdoorclosed = false;
+        }
+        SDL_RenderTexture(renderer,rightDoorFrame[frame],NULL,&rightdoor);
+    }
     else if(rightdoorup){
         SDL_RenderTexture(renderer,rightDoorFrame[12],NULL,&rightdoor);
     }
+
+    
     
 
    
