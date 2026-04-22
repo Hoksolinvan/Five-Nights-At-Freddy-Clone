@@ -23,10 +23,16 @@ int animFrame = 0;
 Uint64 animStartFrame = SDL_GetTicks();
 bool leftdoorbottom =false;
 bool leftdoorup = false;
-
+SDL_FRect timeText = {1120, 10, 125,50};
+SDL_FRect nightText = {1120, 50, 125,50};
+SDL_FRect powerleft = {20,590,100,35};
+SDL_FRect usage = {20,640,100,35};
+SDL_FRect powerleft1 = {140,640,100,35};
 bool rightdoorbottom = false;
 bool rightdoorup = false;
-
+bool inner_E = false;
+int globalPowerUsage = 0;
+SDL_Texture* powerbar[5];
 
 int main(int argc, char* argv[]){
     srand(time(0));
@@ -125,8 +131,11 @@ int main(int argc, char* argv[]){
     SDL_FRect dst1 = {1075/2,600/2,200,50};
     SDL_Surface* textSurface = TTF_RenderText_Blended(font,"12:00",0,color);
     SDL_Surface* textSurface1 = TTF_RenderText_Blended(font,"Night 1",0,color);
+    
     SDL_Texture* text_texture = SDL_CreateTextureFromSurface(renderer,textSurface);
     SDL_Texture* text_texture1 = SDL_CreateTextureFromSurface(renderer,textSurface1);
+
+    
 
     SDL_Surface* main_camera = IMG_Load("assets/Office/Map/145.png");
     SDL_Texture* main_camera_texture = SDL_CreateTextureFromSurface(renderer,main_camera);
@@ -152,9 +161,38 @@ int main(int argc, char* argv[]){
         SDL_DestroySurface(camera_surface);
     }
 
+    SDL_Surface* usage_icon = IMG_Load("assets/Numbers_and_Nights/Camera and Nights/189.png");
+    SDL_Surface* power_left = IMG_Load("assets/Numbers_and_Nights/Camera and Nights/207.png");
+
+    SDL_Texture* usage_texture = SDL_CreateTextureFromSurface(renderer,usage_icon);
+    SDL_Texture* power_left_texture = SDL_CreateTextureFromSurface(renderer,power_left);
+
+
+
+    const char* powerpath[5] ={
+        "assets/Office/Door_Lights/Power/212.png",
+        "assets/Office/Door_Lights/Power/213.png",
+        "assets/Office/Door_Lights/Power/214.png",
+        "assets/Office/Door_Lights/Power/456.png",
+        "assets/Office/Door_Lights/Power/455.png"
+
+    };
+
+    for(int i=0; i<5;i++){
+        SDL_Surface* temp = IMG_Load(powerpath[i]);
+
+        powerbar[i]=SDL_CreateTextureFromSurface(renderer,temp);
+
+        SDL_DestroySurface(temp);
+    }
+
+
+
     TTF_CloseFont(font);
     SDL_DestroySurface(textSurface);
     SDL_DestroySurface(textSurface1);
+    SDL_DestroySurface(usage_icon);
+    SDL_DestroySurface(power_left);
    
 
     while(running){
@@ -181,6 +219,7 @@ int main(int argc, char* argv[]){
                 if(main_office){
                      if(mouseY>=window_y*0.75 && mouseY<window_y && SDL_GetTicks()-previous_camera_time>=900){
                         screen_camera = !screen_camera;
+                        
                         previous_camera_time = SDL_GetTicks();
                         MIX_SetTrackAudio(sfxTrack, blip);
                         MIX_PlayTrack(sfxTrack, 0);
@@ -235,7 +274,16 @@ int main(int argc, char* argv[]){
                             MIX_StopTrack(sfxTrack,0);
                           }
 
+
+
                           leftdoorbottom = !leftdoorbottom;
+
+                          if(leftdoorbottom){
+                            globalPowerUsage++;
+                        }
+                        else{
+                            globalPowerUsage--;
+                        }
                     }
 
                 if(mouseX_button>=0 && mouseX_button<=100 && mouseY_button>=290 && mouseY_button<=350){
@@ -251,9 +299,13 @@ int main(int argc, char* argv[]){
                           }
 
                           leftdoorup = !leftdoorup;
-                          if(leftdoorup){                          // only when opening the door
+                          if(leftdoorup){    
+                            globalPowerUsage++;                      // only when opening the door
                             leftdoorclosed = false;
                             // reset timer HERE
+                        }
+                        else{
+                            globalPowerUsage--;
                         }
                          leftDoorAnimStart = SDL_GetTicks(); 
                 }
@@ -273,7 +325,11 @@ int main(int argc, char* argv[]){
                           rightdoorup = !rightdoorup;
                           if(rightdoorup){
                             rightdoorclosed = false;
+                            globalPowerUsage++;
                             
+                        }
+                        else{
+                            globalPowerUsage--;
                         }
                         rightDoorAnimStart = SDL_GetTicks();
                 }
@@ -288,6 +344,13 @@ int main(int argc, char* argv[]){
                           }
 
                           rightdoorbottom = !rightdoorbottom;
+
+                            if(rightdoorbottom){
+                            globalPowerUsage++;
+                        }
+                        else{
+                            globalPowerUsage--;
+                        }
                 }
 
 
@@ -312,6 +375,7 @@ int main(int argc, char* argv[]){
                       if (!MIX_TrackPlaying(sfxTrack)) {
             MIX_SetTrackAudio(sfxTrack, staticSound);
             MIX_PlayTrack(sfxTrack, 0);
+            
         }
 
 
@@ -354,6 +418,8 @@ int main(int argc, char* argv[]){
             
         }
 
+
+
         else if(main_game){
             if(!(frame%150)){
             if(alpha>0){
@@ -373,11 +439,17 @@ int main(int argc, char* argv[]){
 
             }
             else{
+                 SDL_SetTextureAlphaMod(text_texture, 240);
+                SDL_SetTextureAlphaMod(text_texture1, 240);
                 main_game=false;
                 main_office = true;
             }
         }
+
+
         else if(main_office){
+
+            
 
             if(!MIX_TrackPlaying(buzzfan_track)){
                    MIX_PlayTrack(buzzfan_track, props);
@@ -386,7 +458,7 @@ int main(int argc, char* argv[]){
             }
 
 
-            if(pressed_E){
+            if(pressed_E || inner_E){
                 MIX_StopTrack(sfxTrack1,0);
             }
 
@@ -395,6 +467,7 @@ int main(int argc, char* argv[]){
             if(!pressed_E){
               MIX_SetTrackAudio(sfxTrack1, night1);
             MIX_PlayTrack(sfxTrack1, 0);
+            inner_E=true;
             }
         }
       
@@ -421,10 +494,7 @@ int main(int argc, char* argv[]){
     SDL_RenderTexture(renderer, camera_array[animFrame], NULL, &cameradst);
 }
 
-
-
-                
-        }
+}
 
         if(cameraMode){
 
@@ -432,6 +502,12 @@ int main(int argc, char* argv[]){
         }
       
 
+        SDL_RenderTexture(renderer,text_texture,0,&timeText);
+            SDL_RenderTexture(renderer,text_texture1,0,&nightText);
+
+        SDL_RenderTexture(renderer,usage_texture,0,&usage);
+        SDL_RenderTexture(renderer,power_left_texture,0,&powerleft);
+        SDL_RenderTexture(renderer,powerbar[globalPowerUsage],0,&powerleft1);
         }
         
 
