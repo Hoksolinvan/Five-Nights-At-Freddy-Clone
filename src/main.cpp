@@ -28,11 +28,16 @@ SDL_FRect nightText = {1120, 50, 125,50};
 SDL_FRect powerleft = {20,590,100,35};
 SDL_FRect usage = {20,640,100,35};
 SDL_FRect powerleft1 = {140,640,100,35};
+SDL_FRect percentage_coordinate = {135,590,100,35};
+SDL_FRect flipper_coordinate = {300,590,600,100};
 bool rightdoorbottom = false;
 bool rightdoorup = false;
 bool inner_E = false;
 int globalPowerUsage = 0;
 SDL_Texture* powerbar[5];
+int cur_default = 5000;
+
+int percentage = 100;
 
 int main(int argc, char* argv[]){
     srand(time(0));
@@ -120,7 +125,7 @@ int main(int argc, char* argv[]){
     SDL_PropertiesID props = SDL_CreateProperties();
     SDL_SetNumberProperty(props, MIX_PROP_PLAY_LOOPS_NUMBER, -1); // -1 = loop forever
     MIX_PlayTrack(ambienceTrack, props);
-    //SDL_DestroyProperties(props);
+    SDL_DestroyProperties(props);
 
 
     TTF_Font* font =  TTF_OpenFont("external/textfiles/consolas.ttf",64);
@@ -135,11 +140,19 @@ int main(int argc, char* argv[]){
     SDL_Texture* text_texture = SDL_CreateTextureFromSurface(renderer,textSurface);
     SDL_Texture* text_texture1 = SDL_CreateTextureFromSurface(renderer,textSurface1);
 
-    
+    std::string percentage_string = std::to_string(percentage) + "%";
+    SDL_Surface* percentageSurface = TTF_RenderText_Blended(font,percentage_string.c_str(),0,color);
+    SDL_Texture* percentage_texture = SDL_CreateTextureFromSurface(renderer,percentageSurface);
+    SDL_DestroySurface(percentageSurface);
 
-    SDL_Surface* main_camera = IMG_Load("assets/Office/Map/145.png");
-    SDL_Texture* main_camera_texture = SDL_CreateTextureFromSurface(renderer,main_camera);
-    SDL_DestroySurface(main_camera);
+    SDL_Surface* flipper = IMG_Load("assets/Office/Monitor/flipper.png");
+
+    SDL_Texture* flipper_texture = SDL_CreateTextureFromSurface(renderer,flipper);
+    SDL_DestroySurface(flipper);
+
+    // SDL_Surface* main_camera = IMG_Load("assets/Office/Map/145.png");
+    // SDL_Texture* main_camera_texture = SDL_CreateTextureFromSurface(renderer,main_camera);
+    // SDL_DestroySurface(main_camera);
     const char* path[11]={
         "assets/Office/Monitor/46.png",
         "assets/Office/Monitor/132.png",
@@ -188,7 +201,6 @@ int main(int argc, char* argv[]){
 
 
 
-    TTF_CloseFont(font);
     SDL_DestroySurface(textSurface);
     SDL_DestroySurface(textSurface1);
     SDL_DestroySurface(usage_icon);
@@ -217,8 +229,15 @@ int main(int argc, char* argv[]){
                 float mouseX, mouseY;
                 SDL_GetMouseState(&mouseX, &mouseY);
                 if(main_office){
-                     if(mouseY>=window_y*0.75 && mouseY<window_y && SDL_GetTicks()-previous_camera_time>=900){
+                     if(mouseX>=window_x*0.25 && mouseX <= window_x*0.65 && mouseY>=window_y*0.75 && mouseY<window_y && SDL_GetTicks()-previous_camera_time>=900){
                         screen_camera = !screen_camera;
+
+                        if(screen_camera){
+                             globalPowerUsage++;
+                        }
+                        else{
+                            globalPowerUsage--;
+                        }
                         
                         previous_camera_time = SDL_GetTicks();
                         MIX_SetTrackAudio(sfxTrack, blip);
@@ -227,7 +246,8 @@ int main(int argc, char* argv[]){
                         animFrame=0;
                          animStartFrame = SDL_GetTicks();
                          cameraMode= false;
-                        
+
+                       
                 }
 
                     
@@ -353,9 +373,25 @@ int main(int argc, char* argv[]){
                         }
                 }
 
+               
+
 
             
             }
+             if(cameraMode){
+                int mouseX_button = event.button.x;
+                int mouseY_button = event.button.y;
+
+                    if(mouseX_button>=1000 && mouseX_button<=1065 && mouseY_button>=405 && mouseY_button <= 435){
+                        MIX_SetTrackAudio(sfxTrack, blip);
+                        MIX_PlayTrack(sfxTrack, 0);
+                    }
+                    if(mouseX_button>=900 && mouseX_button<=965 && mouseY_button>=415 && mouseY_button <= 445){
+                        MIX_SetTrackAudio(sfxTrack, blip);
+                        MIX_PlayTrack(sfxTrack, 0);
+                    }
+
+                }
 
             
             }
@@ -448,12 +484,26 @@ int main(int argc, char* argv[]){
 
 
         else if(main_office){
+          
+            cur_default = 5000 - globalPowerUsage*1000;
 
-            
+        
+            if(!(frame%cur_default) && percentage>0){
+                percentage--;
+             
+                std::string temp_string_percentage = std::to_string(percentage)+"%";
+
+                SDL_DestroyTexture(percentage_texture);
+                SDL_Surface* temp = TTF_RenderText_Blended(font,temp_string_percentage.c_str(),0,color);
+                percentage_texture = SDL_CreateTextureFromSurface(renderer,temp);
+                SDL_DestroySurface(temp);
+            }
+
+             
 
             if(!MIX_TrackPlaying(buzzfan_track)){
                    MIX_PlayTrack(buzzfan_track, props);
-
+                   
                 
             }
 
@@ -474,7 +524,7 @@ int main(int argc, char* argv[]){
           
              if(cameraMode){
 
-            SDL_RenderTexture(renderer,main_camera_texture,NULL,&cameradst);
+           // SDL_RenderTexture(renderer,main_camera_texture,NULL,&cameradst);
         }
             
             if(!screen_camera){
@@ -498,7 +548,9 @@ int main(int argc, char* argv[]){
 
         if(cameraMode){
 
-            SDL_RenderTexture(renderer,main_camera_texture,NULL,&cameradst);
+            mainoffice->RenderCamera();
+
+        //     SDL_RenderTexture(renderer,main_camera_texture,NULL,&cameradst);
         }
       
 
@@ -508,6 +560,8 @@ int main(int argc, char* argv[]){
         SDL_RenderTexture(renderer,usage_texture,0,&usage);
         SDL_RenderTexture(renderer,power_left_texture,0,&powerleft);
         SDL_RenderTexture(renderer,powerbar[globalPowerUsage],0,&powerleft1);
+        SDL_RenderTexture(renderer,percentage_texture,0,&percentage_coordinate);
+        SDL_RenderTexture(renderer,flipper_texture,0,&flipper_coordinate);
         }
         
 
@@ -530,6 +584,7 @@ int main(int argc, char* argv[]){
     MIX_DestroyAudio(staticSound2);
     MIX_DestroyAudio(blip);
     MIX_DestroyMixer(mixer);
+        TTF_CloseFont(font);
     MIX_Quit();
     return 0;
 }
