@@ -1,4 +1,4 @@
-# Fnaf-Clone 🍕
+# Five Nights at Freddy's Clone 🍕
 
 This is my original implementation of the popular Five Nights at Freddy's game in C++ using the SDL3 graphics library.
 
