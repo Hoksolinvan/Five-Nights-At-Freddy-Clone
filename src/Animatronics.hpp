@@ -25,7 +25,7 @@ public:
 
         if(inRoom == 8 && !OfficeDoor){
             doorBlockTimer++;
-            if(doorBlockTimer > 300){
+            if(doorBlockTimer > 1){
                 inRoom = 0;
                 doorBlockTimer = 0;
             }
@@ -69,7 +69,7 @@ public:
 
         if(inRoom == 8 && !OfficeDoor){
             doorBlockTimer++;
-            if(doorBlockTimer > 300){
+            if(doorBlockTimer > 1){
                 inRoom = 0;
                 doorBlockTimer = 0;
             }
@@ -111,16 +111,16 @@ public:
 
     void Tick(bool OfficeDoor, bool monitor, int dummy1, int dummy2){
 
-        if(inRoom == 8 && !OfficeDoor){
+        if(inRoom == 9 && !OfficeDoor){
             doorBlockTimer++;
-            if(doorBlockTimer > 300){
-                inRoom = 0;
+            if(doorBlockTimer > 1){
+                inRoom--;
                 doorBlockTimer = 0;
             }
             return;
         }
 
-        if(inRoom == 8 && OfficeDoor){
+        if(inRoom == 9 && OfficeDoor){
             playerDeath = true;
             return;
         }

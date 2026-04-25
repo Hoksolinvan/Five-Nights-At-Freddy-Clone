@@ -125,6 +125,7 @@ int main(int argc, char* argv[]){
 
 
 
+    MIX_Track* windowTrack = MIX_CreateTrack(mixer);
     MIX_Track* bonniejumpscaretrack = MIX_CreateTrack(mixer);
     MIX_Track* sfxTrack = MIX_CreateTrack(mixer);
     MIX_Track* sfxTrack1 = MIX_CreateTrack(mixer);
@@ -275,6 +276,49 @@ int main(int argc, char* argv[]){
     Animatronic* chika = new Chika(difficulty);
     Animatronic* foxy = new Foxy(difficulty);
 
+
+    const char* Freddy_Jumpscare_Path_Peek[32]={
+        "assets/Jumpscares/Freddy/Peekaboo!/39.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/485.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/489.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/490.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/491.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/493.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/495.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/496.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/497.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/498.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/499.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/500.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/501.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/502.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/503.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/504.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/505.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/506.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/507.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/508.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/509.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/510.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/511.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/512.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/513.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/514.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/515.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/516.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/517.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/518.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/519.png",
+        "assets/Jumpscares/Freddy/Peekaboo!/521.png"
+    };
+
+    SDL_Texture* Freddy_Peek_Texture[32];
+
+    for(int i=0; i<32;i++){
+        SDL_Surface* temp = IMG_Load(Freddy_Jumpscare_Path_Peek[i]);
+        Freddy_Peek_Texture[i]=SDL_CreateTextureFromSurface(renderer,temp);
+        SDL_DestroySurface(temp);
+    }
     
 
     while(running){
@@ -316,7 +360,7 @@ int main(int argc, char* argv[]){
                 float mouseX, mouseY;
                 SDL_GetMouseState(&mouseX, &mouseY);
                 if(main_office){
-                     if(mouseX>=window_x*0.25 && mouseX <= window_x*0.65 && mouseY>=window_y*0.75 && mouseY<window_y && SDL_GetTicks()-previous_camera_time>=900 && percentage>0){
+                     if(mouseX>=window_x*0.25 && mouseX <= window_x*0.65 && mouseY>=window_y*0.75 && mouseY<window_y && SDL_GetTicks()-previous_camera_time>=900 || percentage <0){
                         screen_camera = !screen_camera;
 
                         if(screen_camera){
@@ -376,9 +420,11 @@ int main(int argc, char* argv[]){
                         
                           if (!MIX_TrackPlaying(sfxTrack)) {
 
-                        if(bonnieroom==8){
-                            MIX_SetTrackAudio(sfxTrack,windowscare);
-                            MIX_PlayTrack(sfxTrack, 0);
+                        if(bonnieroom==8 && leftdoorbottom){
+                            
+                             MIX_SetTrackAudio(windowTrack,windowscare);
+                            MIX_PlayTrack(windowTrack,0);
+
                         }
                         else{
                         MIX_SetTrackAudio(sfxTrack, hum);
@@ -407,6 +453,7 @@ int main(int argc, char* argv[]){
                      if (!MIX_TrackPlaying(sfxTrack)) {
                         MIX_SetTrackAudio(sfxTrack, door_close);
                         MIX_PlayTrack(sfxTrack, 0);
+
                           }
                           else{
                             MIX_SetTrackAudio(sfxTrack, door_close);
@@ -431,10 +478,12 @@ int main(int argc, char* argv[]){
                        if (!MIX_TrackPlaying(sfxTrack)) {
                         MIX_SetTrackAudio(sfxTrack, door_close);
                         MIX_PlayTrack(sfxTrack, 0);
+                       
                           }
                           else{
                             MIX_SetTrackAudio(sfxTrack, door_close);
                              MIX_PlayTrack(sfxTrack, 0);
+                               
                             // MIX_StopTrack(sfxTrack,0);
                           }
 
@@ -453,9 +502,9 @@ int main(int argc, char* argv[]){
                 if(mouseX_button>=1180 && mouseX_button<=1250 && mouseY_button>=360 && mouseY_button<=400 && percentage>0){
                         if (!MIX_TrackPlaying(sfxTrack)) {
 
-                        if(chikaroom==8){
-                            MIX_SetTrackAudio(sfxTrack,windowscare);
-                            MIX_PlayTrack(sfxTrack, 0);
+                        if(chikaroom==8 && rightdoorbottom){
+                            MIX_SetTrackAudio(windowTrack,windowscare);
+                            MIX_PlayTrack(windowTrack,0);
                         }
                         else{
                         MIX_SetTrackAudio(sfxTrack, hum);
@@ -743,6 +792,7 @@ int main(int argc, char* argv[]){
         percentage_texture = SDL_CreateTextureFromSurface(renderer,temp);
         SDL_DestroySurface(temp);
         MIX_StopTrack(buzzfan_track,0);
+        MIX_StopTrack(sfxTrack,0);
         delete bonnie;
         delete freddy;
         delete chika;
@@ -786,6 +836,7 @@ int main(int argc, char* argv[]){
         rightdoorup = false;
         globalPowerUsage=0;
         percentage = 100;
+        MIX_StopTrack(sfxTrack,0);
         delete bonnie;
         delete freddy;
         delete chika;
@@ -940,12 +991,14 @@ int main(int argc, char* argv[]){
       
           
             
-            if(!screen_camera){
+            if(!screen_camera && percentage>0){
             
             if(percentage>0){
             mainoffice->RenderOffice(screen_camera,leftdoorbottom,leftdoorup,rightdoorbottom,rightdoorup,ending,(bonnieroom==8),(chikaroom==8));
             }
             else{
+                
+                cameraMode=false;
                 mainoffice->RenderEnding();
                 
             }
@@ -966,11 +1019,11 @@ int main(int argc, char* argv[]){
 
 }
 
-        if(cameraMode){
+        if(cameraMode && percentage>0){
 
            
 
-            mainoffice->RenderCamera(state,cameralocation);
+         mainoffice->RenderCamera(state,cameralocation);
 
         }
       
@@ -984,6 +1037,13 @@ int main(int argc, char* argv[]){
         SDL_RenderTexture(renderer,powerbar[globalPowerUsage],0,&powerleft1);
         SDL_RenderTexture(renderer,percentage_texture,0,&percentage_coordinate);
         SDL_RenderTexture(renderer,flipper_texture,0,&flipper_coordinate);
+        }
+
+
+        if(percentage<0){
+            
+            
+             mainoffice->RenderEnding();
         }
         
         }
