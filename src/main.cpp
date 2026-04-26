@@ -12,6 +12,8 @@ bool running = true;
 bool main_menu = true;
 bool main_game = false;
 bool main_office = false;
+bool game_ending=false;
+bool game_ending_sound = false;
 bool default_main_menu = true;
 int main_menu_state = 0;
 int alpha = 240;
@@ -25,6 +27,7 @@ int animFrame = 0;
 Uint64 animStartFrame = 0;
 bool leftdoorbottom =false;
 bool leftdoorup = false;
+bool powerdown_bool = false;
 SDL_FRect timeText = {1120, 10, 125,50};
 SDL_FRect nightText = {1120, 50, 125,50};
 SDL_FRect powerleft = {20,590,100,35};
@@ -47,6 +50,8 @@ int deathanimFrame=0;
 
 
 int percentage = 100;
+Uint64 game_time=0;
+int time_index =0;
 int difficulty=5;
 int cameralocation = 0;
 
@@ -122,9 +127,34 @@ int main(int argc, char* argv[]){
     MIX_Audio* door_close = MIX_LoadAudio(mixer,"assets/sounds/SFXBible_12478.wav",false);
     MIX_Audio* bonniescream = MIX_LoadAudio(mixer,"assets/sounds/XSCREAM.wav",false);
     MIX_Audio* windowscare  = MIX_LoadAudio(mixer,"assets/sounds/windowscare.wav",false);
+    MIX_Audio* game_ending_audio = MIX_LoadAudio(mixer,"assets/sounds/chimes 2.wav",false);
+    MIX_Audio* Doorpounding = MIX_LoadAudio(mixer,"assets/sounds/Doorpounding.wav",false);
+    MIX_Audio* knock2 = MIX_LoadAudio(mixer,"assets/sounds/knock2.wav",false);
+    MIX_Audio* powerdown =MIX_LoadAudio(mixer,"assets/sounds/powerdown.wav",false);
+    MIX_Audio* chicamoving =MIX_LoadAudio(mixer,"assets/sounds/chicamoving.wav",false);
+    MIX_Audio* chicamoving1 =MIX_LoadAudio(mixer,"assets/sounds/chicamoving2.wav",false);
+    MIX_Audio* chicamoving2 =MIX_LoadAudio(mixer,"assets/sounds/chicamoving3.wav",false);
+    MIX_Audio* chicamoving3 =MIX_LoadAudio(mixer,"assets/sounds/chicamoving4.wav",false);
+    MIX_Audio* cheer = MIX_LoadAudio(mixer,"assets/sounds/cheer.wav",false);
+    MIX_Audio* deepsteps = MIX_LoadAudio(mixer,"assets/sounds/deep steps.wav",false);
+    MIX_Audio* whispering2 = MIX_LoadAudio(mixer,"assets/sounds/whispering2.wav",false);
+    MIX_Audio* laugh_1 = MIX_LoadAudio(mixer,"assets/sounds/Laugh_Giggle_Girl_1d.wav",false);
+     MIX_Audio* laugh_2 = MIX_LoadAudio(mixer,"assets/sounds/Laugh_Giggle_Girl_2d.wav",false);
+      MIX_Audio* laugh_3 = MIX_LoadAudio(mixer,"assets/sounds/Laugh_Giggle_Girl_8d.wav",false);
+    MIX_Audio* garble_1 = MIX_LoadAudio(mixer,"assets/sounds/garble1.wav",false);
+    MIX_Audio* garble_2 = MIX_LoadAudio(mixer,"assets/sounds/garble2.wav",false);
+    MIX_Audio* garble_3 = MIX_LoadAudio(mixer,"assets/sounds/garble3.wav",false);
 
-
-
+    MIX_Track* garble_track = MIX_CreateTrack(mixer);
+    MIX_Track* laugh_track = MIX_CreateTrack(mixer);
+    MIX_Track* whispering2_track = MIX_CreateTrack(mixer);
+    MIX_Track* deepsteps_track = MIX_CreateTrack(mixer);
+    MIX_Track* cheer_track = MIX_CreateTrack(mixer);
+    MIX_Track* game_ending_audio_track = MIX_CreateTrack(mixer);
+    MIX_Track* Doorpounding_track = MIX_CreateTrack(mixer);
+    MIX_Track* knock2_track = MIX_CreateTrack(mixer);
+    MIX_Track* powerdown_track = MIX_CreateTrack(mixer);
+    MIX_Track* chicamoving_track = MIX_CreateTrack(mixer);
     MIX_Track* windowTrack = MIX_CreateTrack(mixer);
     MIX_Track* bonniejumpscaretrack = MIX_CreateTrack(mixer);
     MIX_Track* sfxTrack = MIX_CreateTrack(mixer);
@@ -158,6 +188,35 @@ int main(int argc, char* argv[]){
     
     SDL_Texture* text_texture = SDL_CreateTextureFromSurface(renderer,textSurface);
     SDL_Texture* text_texture1 = SDL_CreateTextureFromSurface(renderer,textSurface1);
+
+    SDL_Surface* textSurface_inoffice1 = TTF_RenderText_Blended(font,"12 AM",0,color);
+    SDL_Surface* textSurface_inoffice2 = TTF_RenderText_Blended(font,"1 AM",0,color);
+    SDL_Surface* textSurface_inoffice3 = TTF_RenderText_Blended(font,"2 AM",0,color);
+    SDL_Surface* textSurface_inoffice4 = TTF_RenderText_Blended(font,"3 AM",0,color);
+    SDL_Surface* textSurface_inoffice5 = TTF_RenderText_Blended(font,"4 AM",0,color);
+    SDL_Surface* textSurface_inoffice6 = TTF_RenderText_Blended(font,"5 AM",0,color);
+    SDL_Surface* textSurface_inoffice7 = TTF_RenderText_Blended(font,"6 AM",0,color);
+
+    SDL_Texture* textTexture_inoffice[7];
+
+    textTexture_inoffice[0]=SDL_CreateTextureFromSurface(renderer,textSurface_inoffice1);
+    textTexture_inoffice[1]=SDL_CreateTextureFromSurface(renderer,textSurface_inoffice2);
+    textTexture_inoffice[2]=SDL_CreateTextureFromSurface(renderer,textSurface_inoffice3);
+    textTexture_inoffice[3]=SDL_CreateTextureFromSurface(renderer,textSurface_inoffice4);
+    textTexture_inoffice[4]=SDL_CreateTextureFromSurface(renderer,textSurface_inoffice5);
+    textTexture_inoffice[5]=SDL_CreateTextureFromSurface(renderer,textSurface_inoffice6);
+    textTexture_inoffice[6]=SDL_CreateTextureFromSurface(renderer,textSurface_inoffice7);
+
+    SDL_DestroySurface(textSurface_inoffice1);
+    SDL_DestroySurface(textSurface_inoffice2);
+    SDL_DestroySurface(textSurface_inoffice3);
+    SDL_DestroySurface(textSurface_inoffice4);
+    SDL_DestroySurface(textSurface_inoffice5);
+    SDL_DestroySurface(textSurface_inoffice6);
+    SDL_DestroySurface(textSurface_inoffice7);
+
+
+
 
     std::string percentage_string = std::to_string(percentage) + "%";
     SDL_Surface* percentageSurface = TTF_RenderText_Blended(font,percentage_string.c_str(),0,color);
@@ -838,12 +897,11 @@ int main(int argc, char* argv[]){
 
 
         else if(main_office){
+            game_time++;
           
             cur_default = 5000 - globalPowerUsage*1000;
 
-            
 
-        
             if(!(frame%cur_default) && percentage>0){
                 percentage--;
              
@@ -857,19 +915,87 @@ int main(int argc, char* argv[]){
             else{
                 ending=true;
             }
-           
-             
+
+
+
+
+            if(!MIX_TrackPlaying(laugh_track) && freddyroom >=6 && freddyroom <8){
+                MIX_SetTrackAudio(laugh_track, laugh_2);
+                        MIX_PlayTrack(laugh_track, 0);
+            }
+
+
+            if(!MIX_TrackPlaying(laugh_track) && freddyroom >=5 && freddyroom <6){
+                MIX_SetTrackAudio(laugh_track, laugh_1);
+                        MIX_PlayTrack(laugh_track, 0);
+            }
+
+            
+
+            if(!MIX_TrackPlaying(laugh_track) && freddyroom >=3 && freddyroom <4){
+                MIX_SetTrackAudio(laugh_track, laugh_1);
+                        MIX_PlayTrack(laugh_track, 0);
+            }
+
+             if (!MIX_TrackPlaying(deepsteps_track) && bonnieroom >=5 && bonnieroom < 6) {
+                        MIX_SetTrackAudio(deepsteps_track, deepsteps);
+                        MIX_PlayTrack(deepsteps_track, 0);
+            
+                }
+
+            if(!MIX_TrackPlaying(whispering2_track) && bonnieroom>=6 && bonnieroom<7){
+                MIX_SetTrackAudio(whispering2_track,whispering2);
+                MIX_PlayTrack(whispering2_track,0);
+            }
+
+            if (!MIX_TrackPlaying(chicamoving_track) && chikaroom >= 3 && chikaroom < 4 ) {
+                        MIX_SetTrackAudio(chicamoving_track, chicamoving);
+                        MIX_PlayTrack(chicamoving_track, 0);
+            
+                }
+                        
+            
+            if (!MIX_TrackPlaying(chicamoving_track) && chikaroom>=4 && chikaroom<5) {
+                        MIX_SetTrackAudio(chicamoving_track, chicamoving1);
+                        MIX_PlayTrack(chicamoving_track, 0);
+            
+                }
+
+            if(!MIX_TrackPlaying(chicamoving_track) && chikaroom>=5 && chikaroom < 6){
+                MIX_SetTrackAudio(chicamoving_track,chicamoving2);
+                MIX_PlayTrack(chicamoving_track,0);
+            }
+
+            if(!MIX_TrackPlaying(chicamoving_track) && chikaroom>=6 && chikaroom < 7){
+                MIX_SetTrackAudio(chicamoving_track,chicamoving3);
+                MIX_PlayTrack(chicamoving_track,0);
+            }
+
 
             if(!MIX_TrackPlaying(buzzfan_track) && percentage>0){
                    MIX_PlayTrack(buzzfan_track, props);
                    
                 
-            }
+                }
 
+            if(bonnieroom==8 && leftdoorup){
+                if(!MIX_TrackPlaying(Doorpounding_track)){
+                    MIX_SetTrackAudio(Doorpounding_track,Doorpounding);
+                    MIX_PlayTrack(Doorpounding_track,0);
+                }
+                }
+
+
+            if(chikaroom==8 && rightdoorup){
+                if(!MIX_TrackPlaying(knock2_track)){
+                    MIX_SetTrackAudio(knock2_track,knock2);
+                    MIX_PlayTrack(knock2_track,0);
+                }
+            }
 
             if(pressed_E || inner_E){
                 MIX_StopTrack(sfxTrack1,0);
-            }
+                }
 
             else if(!MIX_TrackPlaying(sfxTrack1)){
             
@@ -878,6 +1004,53 @@ int main(int argc, char* argv[]){
             MIX_PlayTrack(sfxTrack1, 0);
             inner_E=true;
             }
+            
+
+            if(!(game_time % 60000)){
+                time_index++;
+                if(time_index==6){
+                    game_ending=true;
+                    main_office=false;
+                    main_game = true;
+                    main_menu = true;
+                    soundplayed=false;
+                    main_office = false;
+                    cameraMode = false;
+                    default_main_menu = true;
+                    leftdoorbottom = false;
+                    rightdoorbottom = false;
+                    leftdoorup = false;
+                    rightdoorup = false;
+                    percentage = 100;
+                    globalPowerUsage=0;
+
+
+
+                    std::string temp_string_percentage = "100%";
+                    SDL_DestroyTexture(percentage_texture);
+                    SDL_Surface* temp = TTF_RenderText_Blended(font,temp_string_percentage.c_str(),0,color);
+                    percentage_texture = SDL_CreateTextureFromSurface(renderer,temp);
+                    SDL_DestroySurface(temp);
+                    MIX_StopTrack(buzzfan_track,0);
+                    MIX_StopTrack(sfxTrack,0);
+                    delete bonnie;
+                    delete freddy;
+                    delete chika;
+                    delete foxy;
+                    bonnie = new Bonnie(difficulty);
+                    chika = new Chika(difficulty);
+                    freddy = new Freddy(difficulty);
+                    foxy = new Foxy(difficulty);
+                }
+            }
+            
+
+        
+            
+           
+             
+
+            
         }
       
           
@@ -888,6 +1061,13 @@ int main(int argc, char* argv[]){
             mainoffice->RenderOffice(screen_camera,leftdoorbottom,leftdoorup,rightdoorbottom,rightdoorup,ending,(bonnieroom==8),(chikaroom==8));
             }
             else{
+
+                if(!MIX_TrackPlaying(powerdown_track) && !powerdown_bool){
+                    MIX_SetTrackAudio(powerdown_track,powerdown);
+                    MIX_PlayTrack(powerdown_track,0);
+                    powerdown_bool = true;
+
+                }
                 
                 cameraMode=false;
                 mainoffice->RenderEnding();
@@ -911,6 +1091,10 @@ int main(int argc, char* argv[]){
 }
 
         if(cameraMode && percentage>0){
+
+
+
+                    
 
 
                         if(cameralocation==0){
@@ -965,17 +1149,26 @@ int main(int argc, char* argv[]){
                     else if(cameralocation==2){
 
                         if(bonnieroom>=4 && bonnieroom < 5){
+
+                           if(!MIX_TrackPlaying(garble_track)){
+                MIX_SetTrackAudio(garble_track, garble_2);
+                        MIX_PlayTrack(garble_track, 0);
+            }
+                            
                             state = 23;
                         }
                         else if(bonnieroom >=3 && bonnieroom < 4){
 
-                            if(d(gen)< 0.25){
-                                state =22;
+                           if(!MIX_TrackPlaying(garble_track)){
+                MIX_SetTrackAudio(garble_track, garble_1);
+                        MIX_PlayTrack(garble_track, 0);
+            }
+                            
 
-                            }
-                            else{
-                                state=21;
-                            }
+
+
+                                state=22;
+                            //}
                        
                         
                         }
@@ -985,9 +1178,13 @@ int main(int argc, char* argv[]){
                     }
                     else if(cameralocation==5){
                          if(chikaroom>=4 && chikaroom< 4){
+
+                        
                             state=25;
                         }
                         else if(chikaroom >= 3 && chikaroom < 4){
+
+
                            
                                 state = 24;
                            
@@ -1003,6 +1200,9 @@ int main(int argc, char* argv[]){
                     else if(cameralocation==8){
                             if(bonnieroom >=5 && bonnieroom < 6){
                             state=27;
+
+
+                     
                         }
                         else{
                             state=5;
@@ -1010,6 +1210,12 @@ int main(int argc, char* argv[]){
                     }
                     else if(cameralocation==4){
                         if(bonnieroom>=6 && bonnieroom<7){
+
+
+                           if(!MIX_TrackPlaying(garble_track)){
+                MIX_SetTrackAudio(garble_track, garble_3);
+                        MIX_PlayTrack(garble_track, 0);
+            }
                             state=28;
                         }
                         else{
@@ -1054,7 +1260,7 @@ int main(int argc, char* argv[]){
       
 
         if(percentage>0){
-        SDL_RenderTexture(renderer,text_texture,0,&timeText);
+        SDL_RenderTexture(renderer,textTexture_inoffice[time_index],0,&timeText);
         SDL_RenderTexture(renderer,text_texture1,0,&nightText);
 
         SDL_RenderTexture(renderer,usage_texture,0,&usage);
@@ -1071,6 +1277,9 @@ int main(int argc, char* argv[]){
              mainoffice->RenderEnding();
         }
         
+        }
+        else if(game_ending){
+            
         }
         
 
