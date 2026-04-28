@@ -170,9 +170,11 @@ int main(int argc, char* argv[]){
     MIX_Audio* voiceover3 = MIX_LoadAudio(mixer,"assets/sounds/voiceover3.wav",false);
     MIX_Audio* voiceover4 = MIX_LoadAudio(mixer,"assets/sounds/voiceover4.wav",false);
     MIX_Audio* voiceover5 = MIX_LoadAudio(mixer,"assets/sounds/voiceover5.wav",false);
+    MIX_Audio* chime = MIX_LoadAudio(mixer,"assets/sounds/chimes 2.wav",false);
+    
 
 
-
+    MIX_Track* chime_track = MIX_CreateTrack(mixer);
     MIX_Track* MiniDV_track = MIX_CreateTrack(mixer);
     MIX_Track* garble_track = MIX_CreateTrack(mixer);
     MIX_Track* laugh_track = MIX_CreateTrack(mixer);
@@ -1547,7 +1549,36 @@ int main(int argc, char* argv[]){
         
         }
         else if(game_ending){
-            
+
+            if(!MIX_TrackPlaying(chime_track)){
+                        MIX_SetTrackAudio(chime_track,chime);
+                         MIX_PlayTrack(chime_track, 0);
+                    }
+        
+             if(!(frame%150)){
+            if(alpha>0){
+            alpha-=20;
+            }
+            }
+
+            if(frame % 1800){
+
+ 
+              
+                SDL_SetTextureAlphaMod(text_texture, alpha);
+                SDL_SetTextureAlphaMod(text_texture1, alpha);
+                SDL_RenderTexture(renderer, text_texture,NULL, &dst);
+                SDL_RenderTexture(renderer,text_texture1,NULL,&dst1);
+             
+
+            }
+            else{
+                 SDL_SetTextureAlphaMod(text_texture, 240);
+                SDL_SetTextureAlphaMod(text_texture1, 240);
+                main_game=false;
+                main_office = true;
+                game_ending = false;
+            }
         }
         
 
