@@ -9,6 +9,7 @@ const int window_y = 720;
 const int delayPerItem = 25;
 const int jumpscaredelay=200;
 bool running = true;
+bool inner_pressed_E = false;
 bool main_menu = true;
 bool main_game = false;
 bool main_office = false;
@@ -311,21 +312,21 @@ int main(int argc, char* argv[]){
     SDL_Texture* ChikaJumpscare[16];
     const char* ChikaJumpscarePath[16] = {
         "assets/Jumpscares/Chica/65.png",
-         "assets/Jumpscares/Chica/69.png",
-          "assets/Jumpscares/Chica/216.png",
-           "assets/Jumpscares/Chica/228.png",
-            "assets/Jumpscares/Chica/229.png",
-             "assets/Jumpscares/Chica/230.png",
-              "assets/Jumpscares/Chica/231.png",
-               "assets/Jumpscares/Chica/232.png",
-                "assets/Jumpscares/Chica/233.png",
-                 "assets/Jumpscares/Chica/234.png",
-                  "assets/Jumpscares/Chica/235.png",
-                   "assets/Jumpscares/Chica/236.png",
-                    "assets/Jumpscares/Chica/237.png",
-                     "assets/Jumpscares/Chica/239.png",
-                      "assets/Jumpscares/Chica/279.png",
-                       "assets/Jumpscares/Chica/281.png"
+        "assets/Jumpscares/Chica/69.png",
+        "assets/Jumpscares/Chica/216.png",
+        "assets/Jumpscares/Chica/228.png",
+        "assets/Jumpscares/Chica/229.png",
+        "assets/Jumpscares/Chica/230.png",
+        "assets/Jumpscares/Chica/231.png",
+        "assets/Jumpscares/Chica/232.png",
+        "assets/Jumpscares/Chica/233.png",
+        "assets/Jumpscares/Chica/234.png",
+        "assets/Jumpscares/Chica/235.png",
+        "assets/Jumpscares/Chica/236.png",
+        "assets/Jumpscares/Chica/237.png",
+        "assets/Jumpscares/Chica/239.png",
+        "assets/Jumpscares/Chica/279.png",
+        "assets/Jumpscares/Chica/281.png"
     };
 
     for(int i=0; i<16;i++){
@@ -388,6 +389,100 @@ int main(int argc, char* argv[]){
         Freddy_Peek_Texture[i]=SDL_CreateTextureFromSurface(renderer,temp);
         SDL_DestroySurface(temp);
     }
+
+
+
+    const char* Foxy_running[31] ={
+        "assets/Locations/West Hall/Foxy Run/241.png",
+        "assets/Locations/West Hall/Foxy Run/244.png",
+        "assets/Locations/West Hall/Foxy Run/245.png",
+        "assets/Locations/West Hall/Foxy Run/246.png",
+        "assets/Locations/West Hall/Foxy Run/247.png",
+        "assets/Locations/West Hall/Foxy Run/248.png",
+        "assets/Locations/West Hall/Foxy Run/250.png",
+        "assets/Locations/West Hall/Foxy Run/280.png",
+        "assets/Locations/West Hall/Foxy Run/282.png",
+        "assets/Locations/West Hall/Foxy Run/283.png",
+        "assets/Locations/West Hall/Foxy Run/284.png",
+        "assets/Locations/West Hall/Foxy Run/285.png",
+        "assets/Locations/West Hall/Foxy Run/286.png",
+        "assets/Locations/West Hall/Foxy Run/287.png",
+        "assets/Locations/West Hall/Foxy Run/288.png",
+        "assets/Locations/West Hall/Foxy Run/289.png",
+        "assets/Locations/West Hall/Foxy Run/290.png",
+        "assets/Locations/West Hall/Foxy Run/292.png",
+        "assets/Locations/West Hall/Foxy Run/306.png",
+        "assets/Locations/West Hall/Foxy Run/327.png",
+        "assets/Locations/West Hall/Foxy Run/329.png",
+        "assets/Locations/West Hall/Foxy Run/330.png",
+        "assets/Locations/West Hall/Foxy Run/331.png",
+        "assets/Locations/West Hall/Foxy Run/332.png",
+        "assets/Locations/West Hall/Foxy Run/333.png",
+        "assets/Locations/West Hall/Foxy Run/334.png",
+        "assets/Locations/West Hall/Foxy Run/335.png",
+        "assets/Locations/West Hall/Foxy Run/336.png",
+        "assets/Locations/West Hall/Foxy Run/337.png",
+        "assets/Locations/West Hall/Foxy Run/340.png"
+    };
+
+    SDL_Texture* Foxy_running_texture[32];
+
+    for(int i=0;i<32;i++){
+    SDL_Surface* temp = IMG_Load(Foxy_running[i]);
+    Foxy_running_texture[i]=SDL_CreateTextureFromSurface(renderer,temp);
+    SDL_DestroySurface(temp);
+    }
+
+
+    const char* Pirate_cove_path[5]={
+        "assets/Location/66.png",
+        "assets/Location/211.png",
+        "assets/Location/240.png",
+        "assets/Location/338.png",
+        "assets/Location/553.png"
+    };
+
+    SDL_Texture* Pirate_cove_texture[5];
+
+    for(int i=0; i<5;i++){
+        SDL_Surface* temp = IMG_Load(Pirate_cove_path[i]);
+        Pirate_cove_texture[i]=SDL_CreateTextureFromSurface(renderer,temp);
+        SDL_DestroySurface(temp);
+    }
+
+
+    const char* Foxy_jumpscare_path[21] = {
+        "assets/Jumpscares/Foxy/242.png",
+        "assets/Jumpscares/Foxy/243.png",
+        "assets/Jumpscares/Foxy/396.png",
+        "assets/Jumpscares/Foxy/397.png",
+        "assets/Jumpscares/Foxy/398.png",
+        "assets/Jumpscares/Foxy/399.png",
+        "assets/Jumpscares/Foxy/400.png",
+        "assets/Jumpscares/Foxy/401.png",
+        "assets/Jumpscares/Foxy/402.png",
+        "assets/Jumpscares/Foxy/403.png",
+        "assets/Jumpscares/Foxy/404.png",
+        "assets/Jumpscares/Foxy/405.png",
+        "assets/Jumpscares/Foxy/406.png",
+        "assets/Jumpscares/Foxy/407.png",
+        "assets/Jumpscares/Foxy/408.png",
+        "assets/Jumpscares/Foxy/409.png",
+        "assets/Jumpscares/Foxy/410.png",
+        "assets/Jumpscares/Foxy/411.png",
+        "assets/Jumpscares/Foxy/412.png",
+        "assets/Jumpscares/Foxy/413.png",
+        "assets/Jumpscares/Foxy/415.png"
+
+    };
+
+    SDL_Texture* Foxy_jumpscare[21];
+
+    for(int i=0; i<21;i++){
+        SDL_Surface* temp = IMG_Load(Foxy_jumpscare_path[i]);
+        Foxy_jumpscare[i]=SDL_CreateTextureFromSurface(renderer,temp);
+        SDL_DestroySurface(temp);
+    }
     
 
     while(running){
@@ -398,18 +493,16 @@ int main(int argc, char* argv[]){
         int chikaroom = chika->isInRoom();
         int bonnieroom = bonnie->isInRoom();
         int freddyroom = freddy->isInRoom();
+        int foxyroom = foxy->isInRoom();
 
        
-
-
-
         if(SDL_GetTicks()-lastAiTick >=5000 && main_office){
-        bonnie->Tick(!leftdoorup,cameraMode,chikaroom,freddyroom);
-        freddy->Tick(!rightdoorup,cameraMode,bonnieroom,chikaroom);
-        chika->Tick(!rightdoorup,cameraMode,bonnieroom,freddyroom);
-        foxy->Tick(cameraMode,(state==4),leftdoorup, leftdoorup);
+            bonnie->Tick(!leftdoorup,cameraMode,chikaroom,freddyroom);
+            freddy->Tick(!rightdoorup,cameraMode,bonnieroom,chikaroom);
+            chika->Tick(!rightdoorup,cameraMode,bonnieroom,freddyroom);
+            foxy->Tick(cameraMode,(state==4),leftdoorup, leftdoorup);
             lastAiTick = SDL_GetTicks();
-            std::cout << bonnieroom << " " << chikaroom << " " << freddyroom << "\n";
+            std::cout << bonnieroom << " " << chikaroom << " " << freddyroom << " " << foxyroom <<"\n";
         }
 
         
@@ -466,15 +559,27 @@ int main(int argc, char* argv[]){
             
                 int mouseX_button = event.button.x;
                 int mouseY_button = event.button.y;
-               if(mouseX_button>=75 && mouseX_button<=450 && mouseY_button>=300 && mouseY_button<=500){
+               if(mouseX_button>=75 && mouseX_button<=450 && mouseY_button>=300 && mouseY_button<=400){
                 
+                //75 450 300 500
+                main_menu = false;
+                main_game = true;
+                MIX_StopTrack(darknessTrack,0);
+                MIX_SetTrackAudio(sfxTrack, blip);
+                MIX_PlayTrack(sfxTrack, 0);
+                difficulty=1;
+
+               }
+
+
+               if(mouseX_button>=75 && mouseX_button<=450 && mouseY_button>=400 && mouseY_button<=500){
+
 
                 main_menu = false;
                 main_game = true;
                 MIX_StopTrack(darknessTrack,0);
                 MIX_SetTrackAudio(sfxTrack, blip);
                 MIX_PlayTrack(sfxTrack, 0);
-
                }
 
                
@@ -597,8 +702,6 @@ int main(int argc, char* argv[]){
                 }
 
                
-
-
             
             }
              if(cameraMode){
@@ -877,6 +980,7 @@ int main(int argc, char* argv[]){
         }
         else if(foxy->playerDeath){
 
+
         }
         
         else if(main_menu){
@@ -1057,7 +1161,7 @@ int main(int argc, char* argv[]){
 
         
 
-            if(!pressed_E && !MIX_TrackPlaying(sfxTrack1)){
+            if(!inner_pressed_E && !MIX_TrackPlaying(sfxTrack1)){
             
           
             
@@ -1079,14 +1183,16 @@ int main(int argc, char* argv[]){
               MIX_SetTrackAudio(sfxTrack1,voiceover5);
               break;
                 }
+
             MIX_PlayTrack(sfxTrack1, 0);
-            pressed_E=true;
+            inner_pressed_E=true;
             
         }
-        else if((pressed_E && !MIX_TrackPlaying(sfxTrack1))){
+        else if((pressed_E)){
                 MIX_StopTrack(sfxTrack1,0);
-                
-                }
+                inner_pressed_E = true;
+            }
+        
 
 
 

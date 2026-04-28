@@ -177,7 +177,7 @@ public:
         // more checks = slower foxy
         // fewer checks = faster foxy
         int runThreshold;
-        if(checkCount >= 10){
+        if(checkCount >= 7){
             runThreshold = 500;   // checked a lot, foxy is slow
         } else if(checkCount >= 5){
             runThreshold = 300;
