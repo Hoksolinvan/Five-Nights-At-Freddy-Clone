@@ -66,6 +66,7 @@ class MainOffice{
     SDL_Texture* FoxyRun[31];
 
     SDL_Texture* static_animation[8];
+    SDL_Texture* Pirate_cove_texture[5];
 
     SDL_Texture* texts[11];
     

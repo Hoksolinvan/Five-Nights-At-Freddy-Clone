@@ -429,11 +429,19 @@ void MainOffice::initOffice(){
     texts[10]=SDL_CreateTextureFromSurface(renderer,WHallCorner);
     SDL_DestroySurface(WHallCorner);
 
-    // SDL_Surface* camera_green = IMG_Load("assets/Numbers_and_Night/Camera_and_Nights/576.png");
-    
-    // camera_green_texture = SDL_CreateTextureFromSurface(renderer,camera_green);
+    const char* Pirate_cove_path[5]={
+        "assets/Locations/Pirate Cove/66.png",
+        "assets/Locations/Pirate Cove/211.png",
+        "assets/Locations/Pirate Cove/240.png",
+        "assets/Locations/Pirate Cove/338.png",
+        "assets/Locations/Pirate Cove/553.png"
+    };
 
-    // SDL_DestroySurface(camera_green);
+    for(int i=0; i<5;i++){
+        SDL_Surface* temp = IMG_Load(Pirate_cove_path[i]);
+        Pirate_cove_texture[i]=SDL_CreateTextureFromSurface(renderer,temp);
+        SDL_DestroySurface(temp);
+    }
 
 
     SDL_Surface* ending_1 = IMG_Load("assets/Office/Office_Inside/304.png");
@@ -772,6 +780,19 @@ else if (dstCam.x <= -dstCam.w / 6) {
         case 32:
         SDL_RenderTexture(renderer,E_Hall_Corner[1],0,&dstCam);
         break;
+        case 33:
+        SDL_RenderTexture(renderer,Pirate_cove_texture[1],0,&dstCam);
+        break;
+        case 34:
+        SDL_RenderTexture(renderer,Pirate_cove_texture[2],0,&dstCam);
+        break;
+        case 35:
+        SDL_RenderTexture(renderer,Pirate_cove_texture[3],0,&dstCam);
+        break;
+        case 36:
+        SDL_RenderTexture(renderer,Pirate_cove_texture[4],0,&dstCam);
+        break;
+       
     }
          SDL_RenderTexture(renderer,main_camera_texture,0,&cameradst2);
 

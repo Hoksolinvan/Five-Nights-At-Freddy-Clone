@@ -29,7 +29,6 @@ Uint64 animStartFrame = 0;
 bool leftdoorbottom =false;
 bool leftdoorup = false;
 bool powerdown_bool = false;
-bool current_night = 1;
 SDL_FRect timeText = {1120, 10, 125,50};
 SDL_FRect nightText = {1120, 50, 125,50};
 SDL_FRect powerleft = {20,590,100,35};
@@ -57,6 +56,24 @@ int time_index =0;
 int difficulty=1;
 int cameralocation = 0;
 
+inline void readFromfile(){
+    std::ifstream MyFile("progress.txt");
+
+    if(!MyFile.is_open()){
+        return;
+    }
+    std::string line;
+    MyFile >> line;
+    difficulty= std::stoi(line);
+        std::cout << "Loaded difficulty: " << difficulty << "\n";
+
+
+    return;
+
+}
+
+
+
 int main(int argc, char* argv[]){
     srand(time(0));
     std::random_device rd;
@@ -67,6 +84,7 @@ int main(int argc, char* argv[]){
     std::uniform_int_distribution<int> random_number(0,100);
     std::bernoulli_distribution d(0.25);
     SDL_Event event;
+    readFromfile();
     
 
     if(!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)){
@@ -195,7 +213,8 @@ int main(int argc, char* argv[]){
     SDL_FRect cameradst={0,0,1280,720};
     SDL_FRect dst1 = {1075/2,600/2,200,50};
     SDL_Surface* textSurface = TTF_RenderText_Blended(font,"12:00",0,color);
-    SDL_Surface* textSurface1 = TTF_RenderText_Blended(font,"Night 1",0,color);
+    std::string cur_text_night = "Night "+ std::to_string(difficulty); 
+    SDL_Surface* textSurface1 = TTF_RenderText_Blended(font,cur_text_night.c_str(),0,color);
     
     SDL_Texture* text_texture = SDL_CreateTextureFromSurface(renderer,textSurface);
     SDL_Texture* text_texture1 = SDL_CreateTextureFromSurface(renderer,textSurface1);
@@ -392,7 +411,7 @@ int main(int argc, char* argv[]){
 
 
 
-    const char* Foxy_running[31] ={
+    const char* Foxy_running[30] ={
         "assets/Locations/West Hall/Foxy Run/241.png",
         "assets/Locations/West Hall/Foxy Run/244.png",
         "assets/Locations/West Hall/Foxy Run/245.png",
@@ -425,30 +444,16 @@ int main(int argc, char* argv[]){
         "assets/Locations/West Hall/Foxy Run/340.png"
     };
 
-    SDL_Texture* Foxy_running_texture[32];
+    SDL_Texture* Foxy_running_texture[30];
 
-    for(int i=0;i<32;i++){
+    for(int i=0;i<30;i++){
     SDL_Surface* temp = IMG_Load(Foxy_running[i]);
     Foxy_running_texture[i]=SDL_CreateTextureFromSurface(renderer,temp);
     SDL_DestroySurface(temp);
     }
 
 
-    const char* Pirate_cove_path[5]={
-        "assets/Location/66.png",
-        "assets/Location/211.png",
-        "assets/Location/240.png",
-        "assets/Location/338.png",
-        "assets/Location/553.png"
-    };
-
-    SDL_Texture* Pirate_cove_texture[5];
-
-    for(int i=0; i<5;i++){
-        SDL_Surface* temp = IMG_Load(Pirate_cove_path[i]);
-        Pirate_cove_texture[i]=SDL_CreateTextureFromSurface(renderer,temp);
-        SDL_DestroySurface(temp);
-    }
+    
 
 
     const char* Foxy_jumpscare_path[21] = {
@@ -515,7 +520,12 @@ int main(int argc, char* argv[]){
 
         while(SDL_PollEvent(&event)){
             if(event.type == SDL_EVENT_QUIT){
+
+                std::ofstream MyFile("progress.txt");
+                MyFile << difficulty;
+                MyFile.close();
                 running = false;
+
             }
 
             if (event.type == SDL_EVENT_MOUSE_MOTION) {
@@ -540,6 +550,8 @@ int main(int argc, char* argv[]){
                          animStartFrame = SDL_GetTicks();
                          cameraMode= false;
 
+                        
+
                        
                 }
 
@@ -559,7 +571,7 @@ int main(int argc, char* argv[]){
             
                 int mouseX_button = event.button.x;
                 int mouseY_button = event.button.y;
-               if(mouseX_button>=75 && mouseX_button<=450 && mouseY_button>=300 && mouseY_button<=400){
+               if(mouseX_button>=75 && mouseX_button<=450 && mouseY_button>=300 && mouseY_button<=350){
                 
                 //75 450 300 500
                 main_menu = false;
@@ -568,6 +580,12 @@ int main(int argc, char* argv[]){
                 MIX_SetTrackAudio(sfxTrack, blip);
                 MIX_PlayTrack(sfxTrack, 0);
                 difficulty=1;
+                std::string cur_text_night = "Night "+ std::to_string(difficulty); 
+            SDL_Surface* textSurface1 = TTF_RenderText_Blended(font,cur_text_night.c_str(),0,color);
+    
+    text_texture1 = SDL_CreateTextureFromSurface(renderer,textSurface1);
+
+    SDL_DestroySurface(textSurface1);
 
                }
 
@@ -749,7 +767,8 @@ int main(int argc, char* argv[]){
                         MIX_SetTrackAudio(sfxTrack, blip);
                         MIX_PlayTrack(sfxTrack, 0);
                         cameralocation = 3;
-                        state=4;
+                        //state=4;
+                        
 
                         
                     }
@@ -979,6 +998,42 @@ int main(int argc, char* argv[]){
 
         }
         else if(foxy->playerDeath){
+            Uint32 elapsed = SDL_GetTicks() - animStartFrame;
+            deathanimFrame = elapsed / 25;
+
+
+    if(!(deathanimFrame%250)) {
+        // animation finished
+        main_game = true;
+        main_menu = true;
+        soundplayed=false;
+        main_office = false;
+        cameraMode = false;
+        default_main_menu = true;
+        leftdoorbottom = false;
+        rightdoorbottom = false;
+        leftdoorup = false;
+        rightdoorup = false;
+        globalPowerUsage=0;
+        percentage = 100;
+        MIX_StopTrack(sfxTrack,0);
+        delete bonnie;
+        delete freddy;
+        delete chika;
+        delete foxy;
+        bonnie = new Bonnie(difficulty);
+        chika = new Chika(difficulty);
+        freddy = new Freddy(difficulty);
+        foxy = new Foxy(difficulty);
+        MIX_StopTrack(buzzfan_track,0);
+        std::string temp_string_percentage = "100%";
+        SDL_DestroyTexture(percentage_texture);
+        SDL_Surface* temp = TTF_RenderText_Blended(font,temp_string_percentage.c_str(),0,color);
+        percentage_texture = SDL_CreateTextureFromSurface(renderer,temp);
+        SDL_DestroySurface(temp);
+    }
+
+        SDL_RenderTexture(renderer,Foxy_jumpscare[deathanimFrame %21],0,&deathdest);
 
 
         }
@@ -1365,6 +1420,28 @@ int main(int argc, char* argv[]){
                             state = 2;
                         }
                     }
+                    else if(cameralocation==3){
+                    if(foxyroom==1){
+                            state=33;
+                        }
+                        else if(foxyroom==2){
+                            state=34;
+                        }
+                        else if(foxyroom==3){
+                            state=35;
+                        }
+                        else if(foxyroom==4){
+                            state=36;
+                        }
+                        else{
+                        
+                            state=4;
+                        
+                        }
+
+
+                    }
+                    
                     else if(cameralocation==5){
                          if(chikaroom>=4 && chikaroom< 4){
 
@@ -1398,6 +1475,8 @@ int main(int argc, char* argv[]){
                         }
                     }
                     else if(cameralocation==4){
+
+                        
                         if(bonnieroom>=6 && bonnieroom<7){
 
 

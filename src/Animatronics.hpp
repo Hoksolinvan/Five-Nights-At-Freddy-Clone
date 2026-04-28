@@ -189,28 +189,28 @@ public:
 
         runTimer++;
 
-        if(stage == 0){
+        if(stage == 1){
             // peeking out slightly
             if(runTimer >= runThreshold){
                 stage = 1;
                 runTimer = 0;
             }
         }
-        else if(stage == 1){
+        else if(stage == 2){
             // peeking out more
             if(runTimer >= runThreshold){
                 stage = 2;
                 runTimer = 0;
             }
         }
-        else if(stage == 2){
+        else if(stage == 3){
             // about to run
             if(runTimer >= runThreshold){
                 stage = 3;
                 runTimer = 0;
             }
         }
-        else if(stage == 3){
+        else if(stage == 4){
             // running at the door
             if(!OfficeDoor){
                 // door is closed, blocked
@@ -229,7 +229,7 @@ public:
     }
 
     int isInRoom(){
-        return -1;
+        return stage;
     }
 
 private:
